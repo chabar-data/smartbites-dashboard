@@ -46,6 +46,9 @@ def load_data():
     """Load and process the order data"""
     df = pd.read_excel('Order_Data.xlsx', sheet_name='sheet_1')
     
+    # Normalize column names to lowercase
+    df.columns = df.columns.str.lower()
+
     # Data cleaning - only filter if status column exists
     if 'status' in df.columns:
         df = df[~df['status'].isin(['cancelled', 'rejected'])]
