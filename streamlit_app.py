@@ -46,9 +46,33 @@ def load_data():
     """Load and process the order data"""
     df = pd.read_excel('Order_Data.xlsx', sheet_name='sheet_1')
     
-    # Normalize ALL column names to lowercase
+    # Create a mapping of Excel column names to expected names
+    column_mapping = {
+        'OrderNumber': 'ordernumber',
+        'CustomerID': 'customerid',
+        'Customer': 'customer',
+        'Company': 'company',
+        'Vendors': 'vendors',
+        'Total_Revenue': 'total_revenue',
+        'GM1': 'gm_1',  # Map GM1 to gm_1
+        'GM2': 'gm_2',  # Map GM2 to gm_2
+        'Discount': 'discount',
+        'Refund_Amount': 'refund_amount',
+        'DeliveryFee': 'deliveryfee',
+        'Vendor_Delivery_Fee': 'vendor_delivery_fee',
+        'SmartLogistics_Cost': 'smartlogistics_cost',
+        'Commission_in_Currency': 'commission_in_currency',
+        'TotalItems': 'totalitems',
+        'Status': 'status',
+        'Delivery_Status': 'delivery_status'
+    }
+    
+    # Rename columns based on mapping
+    df.rename(columns=column_mapping, inplace=True)
+    
+    # Also handle any remaining columns by converting to lowercase
     df.columns = df.columns.str.lower().str.strip().str.replace(' ', '_')
-
+    
     # Data cleaning - only filter if status column exists
     if 'status' in df.columns:
         df = df[~df['status'].isin(['cancelled', 'rejected'])]
@@ -57,6 +81,7 @@ def load_data():
     numeric_cols = ['total_revenue', 'gm_1', 'gm_2', 'discount', 'refund_amount', 
                     'deliveryfee', 'vendor_delivery_fee', 'smartlogistics_cost',
                     'commission_in_currency', 'totalitems']
+    
     for col in numeric_cols:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
