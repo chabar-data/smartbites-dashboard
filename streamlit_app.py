@@ -45,13 +45,11 @@ st.markdown("""
 @st.cache_data
 def load_data():
     """Load and process the order data"""
-    # Replace this with your actual data loading
-    # df = pd.read_excel('Order_Data.xlsx')
-    # For now, using sample data structure
     df = pd.read_excel('Order_Data.xlsx', sheet_name='sheet_1')
     
-    # Data cleaning
-    df = df[~df['status'].isin(['cancelled', 'rejected'])]
+    # Data cleaning - only filter if status column exists
+    if 'status' in df.columns:
+        df = df[~df['status'].isin(['cancelled', 'rejected'])]
     
     # Convert numeric columns
     numeric_cols = ['total_revenue', 'gm_1', 'gm_2', 'discount', 'refund_amount', 
@@ -59,7 +57,7 @@ def load_data():
                     'commission_in_currency', 'totalitems']
     for col in numeric_cols:
         if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
     
     return df
 
